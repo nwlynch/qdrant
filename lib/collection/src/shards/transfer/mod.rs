@@ -85,7 +85,7 @@ impl ShardTransfer {
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, Serialize, Deserialize)]
-pub struct PointTransfer {
+pub struct MultiSourceTransfer {
     pub from_peer_id: Vec<PeerId>,
     pub from_shard_id: Vec<ShardId>,
     pub to_peer_id: PeerId,
@@ -173,7 +173,7 @@ impl ShardTransferMethod {
 
 /// Interface to consensus for shard transfer operations.
 #[async_trait]
-pub trait ShardTransferConsensus: Send + Sync {
+pub trait ShardTransferConsensus: Send + Sync + Clone {
     /// Get the peer ID for the current node.
     fn this_peer_id(&self) -> PeerId;
 
