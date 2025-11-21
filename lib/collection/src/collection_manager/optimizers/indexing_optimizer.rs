@@ -293,7 +293,7 @@ mod tests {
     use common::counter::hardware_counter::HardwareCounterCell;
     use fs_err as fs;
     use itertools::Itertools;
-    use parking_lot::lock_api::RwLock;
+    use shard::measurable_rwlock::measurable_parking_lot::RwLock;
     use rand::rng;
     use segment::data_types::vectors::DEFAULT_VECTOR_NAME;
     use segment::entry::entry_point::SegmentEntry;
@@ -869,7 +869,7 @@ mod tests {
         let segment = random_segment(dir.path(), 100, point_count, dim as usize);
 
         let segment_id = holder.add_new(segment);
-        let locked_holder: Arc<parking_lot::RwLock<_>> = Arc::new(RwLock::new(holder));
+        let locked_holder: Arc<RwLock<_>> = Arc::new(RwLock::new(holder));
 
         let hnsw_config = HnswConfig {
             m: 16,
