@@ -293,7 +293,6 @@ mod tests {
     use common::counter::hardware_counter::HardwareCounterCell;
     use fs_err as fs;
     use itertools::Itertools;
-    use shard::measurable_rwlock::measurable_parking_lot::RwLock;
     use rand::rng;
     use segment::data_types::vectors::DEFAULT_VECTOR_NAME;
     use segment::entry::entry_point::SegmentEntry;
@@ -303,6 +302,7 @@ mod tests {
     use segment::payload_json;
     use segment::segment_constructor::simple_segment_constructor::{VECTOR1_NAME, VECTOR2_NAME};
     use segment::types::{Distance, PayloadSchemaType, VectorNameBuf};
+    use shard::measurable_rwlock::measurable_parking_lot::RwLock;
     use shard::update::{process_field_index_operation, process_point_operation};
     use tempfile::Builder;
 
