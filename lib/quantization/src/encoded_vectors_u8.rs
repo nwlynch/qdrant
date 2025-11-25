@@ -19,6 +19,13 @@ use crate::quantile::{find_min_max_from_iter, find_quantile_interval};
 
 pub const ALIGNMENT: usize = 16;
 
+#[derive(Serialize, Deserialize, Clone, Default)]
+pub enum ScalarQuantizationMethod {
+    #[default]
+    Uint8,
+    // Future methods can be added here
+}
+
 pub struct EncodedVectorsU8<TStorage: EncodedStorage> {
     encoded_vectors: TStorage,
     metadata: Metadata,
@@ -37,6 +44,9 @@ struct Metadata {
     offset: f32,
     multiplier: f32,
     vector_parameters: VectorParameters,
+
+    #[serde(default = "Default::default")]
+    method: ScalarQuantizationMethod,
 }
 
 impl<TStorage: EncodedStorage> EncodedVectorsU8<TStorage> {
@@ -44,12 +54,14 @@ impl<TStorage: EncodedStorage> EncodedVectorsU8<TStorage> {
         &self.encoded_vectors
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn encode<'a>(
         orig_data: impl Iterator<Item = impl AsRef<[f32]> + 'a> + Clone,
         mut storage_builder: impl EncodedStorageBuilder<Storage = TStorage>,
         vector_parameters: &VectorParameters,
         count: usize,
         quantile: Option<f32>,
+        method: ScalarQuantizationMethod,
         meta_path: Option<&Path>,
         stopped: &AtomicBool,
     ) -> Result<Self, EncodingError> {
@@ -60,6 +72,7 @@ impl<TStorage: EncodedStorage> EncodedVectorsU8<TStorage> {
                 actual_dim,
                 alpha: 0.0,
                 offset: 0.0,
+                method,
                 multiplier: 0.0,
                 vector_parameters: vector_parameters.clone(),
             };
@@ -174,6 +187,7 @@ impl<TStorage: EncodedStorage> EncodedVectorsU8<TStorage> {
             actual_dim,
             alpha,
             offset,
+            method,
             multiplier,
             vector_parameters: vector_parameters.clone(),
         };
