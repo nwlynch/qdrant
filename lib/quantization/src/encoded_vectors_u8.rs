@@ -19,7 +19,7 @@ use crate::quantile::{find_min_max_from_iter, find_quantile_interval};
 
 pub const ALIGNMENT: usize = 16;
 
-#[derive(Serialize, Deserialize, Clone, Default)]
+#[derive(Clone, Default, PartialEq, Debug)]
 pub enum ScalarQuantizationMethod {
     #[default]
     Uint8,
@@ -44,9 +44,6 @@ struct Metadata {
     offset: f32,
     multiplier: f32,
     vector_parameters: VectorParameters,
-
-    #[serde(default = "Default::default")]
-    method: ScalarQuantizationMethod,
 }
 
 impl<TStorage: EncodedStorage> EncodedVectorsU8<TStorage> {
@@ -65,6 +62,7 @@ impl<TStorage: EncodedStorage> EncodedVectorsU8<TStorage> {
         meta_path: Option<&Path>,
         stopped: &AtomicBool,
     ) -> Result<Self, EncodingError> {
+        assert_eq!(method, ScalarQuantizationMethod::Uint8);
         let actual_dim = Self::get_actual_dim(vector_parameters);
 
         if count == 0 {
@@ -72,7 +70,6 @@ impl<TStorage: EncodedStorage> EncodedVectorsU8<TStorage> {
                 actual_dim,
                 alpha: 0.0,
                 offset: 0.0,
-                method,
                 multiplier: 0.0,
                 vector_parameters: vector_parameters.clone(),
             };
@@ -187,7 +184,6 @@ impl<TStorage: EncodedStorage> EncodedVectorsU8<TStorage> {
             actual_dim,
             alpha,
             offset,
-            method,
             multiplier,
             vector_parameters: vector_parameters.clone(),
         };
